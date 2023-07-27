@@ -2,8 +2,11 @@ package com.example.springsecurityjuly.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,17 +27,18 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(){
 
-        UserDetails student = User.builder().username("Ayan")
-                .password(getPassWordEncoder().encode("ayan123"))
-                .roles("STUDENT")
-                .build();
+//        UserDetails student = User.builder().username("Ayan")
+//                .password(getPassWordEncoder().encode("ayan123"))
+//                .roles("STUDENT")
+//                .build();
+//
+//        UserDetails admin = User.builder().username("Bhanu")
+//                .password(getPassWordEncoder().encode("bhanu123"))
+//                .roles("ADMIN")
+//                .build();
 
-        UserDetails admin = User.builder().username("Bhanu")
-                .password(getPassWordEncoder().encode("bhanu123"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(student,admin);
+//        return new InMemoryUserDetailsManager(student,admin);
+        return new CustomUserDetailsService();
     }
 
     @Bean
@@ -55,5 +59,14 @@ public class SecurityConfig {
 
         return httpSecurity.build();
 
+    }
+
+    @Bean
+    public AuthenticationProvider getAuthenticationProvider(){
+
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+        daoAuthenticationProvider.setPasswordEncoder(getPassWordEncoder());
+        return daoAuthenticationProvider;
     }
 }
